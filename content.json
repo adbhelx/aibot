@@ -1,0 +1,54 @@
+{
+  "lessons": {
+    "intro": {
+      "title": "مقدمة للغة الصينية",
+      "description": "تعلم أساسيات اللغة الصينية",
+      "content": "مرحباً بكم في عالم اللغة الصينية! ابدأ رحلتك بتعلم النغمات والحروف الأساسية.",
+      "quiz_id": "quiz1"
+    }
+  },
+  "quizzes": {
+    "quiz1": {
+      "title": "اختبار المقدمة",
+      "questions": [
+        {
+          "question": "ما هو عدد النغمات في لغة الماندرين الصينية؟",
+          "options": [
+            "3",
+            "4",
+            "5",
+            "6"
+          ],
+          "answer_index": 1
+        },
+        {
+          "question": "ما معنى كلمة \"你好\" (nǐ hǎo)؟",
+          "options": [
+            "شكراً",
+            "مع السلامة",
+            "مرحباً",
+            "آسف"
+          ],
+          "answer_index": 2
+        }
+      ]
+    }
+  },
+  "phrases": {
+    "phrase1": {
+      "text": "你好",
+      "translation": "مرحباً"
+    },
+    "phrase2": {
+      "text": "谢谢",
+      "translation": "شكراً"
+    },
+    "phrase3": {
+      "text": "再见",
+      "translation": "مع السلامة"
+    }
+  },
+  "vocabulary": {},
+  "grammar_rules": {},
+  "dialogues": {}
+}
