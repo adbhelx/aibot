@@ -106,3 +106,23 @@ class ContentManager:
                     if keyword.lower() in json.dumps(item_data, ensure_ascii=False).lower():
                         results.append({"type": c_type, "id": item_id, "data": item_data})
         return results
+
+
+    def add_file_data(self, file_id, file_type, file_name=None, user_id=None):
+        if "files" not in self.content:
+            self.content["files"] = {}
+        
+        file_key = f"{file_type}_{file_id}"
+        
+        self.content["files"][file_key] = {
+            "file_id": file_id,
+            "file_type": file_type,
+            "file_name": file_name,
+            "user_id": user_id,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.save_content()
+
+    def get_file_data(self, file_key):
+        return self.content.get("files", {}).get(file_key)
+

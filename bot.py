@@ -21,6 +21,57 @@ logger = logging.getLogger(__name__)
 user_manager = UserManager()
 content_manager = ContentManager()
 
+# دالة معالج الرسائل التي تحتوي على ملفات
+async def handle_file_message(update: Update, context):
+    message = update.effective_message
+    user_id = message.from_user.id
+    caption = message.caption or ""
+
+    file_data = None
+    file_type = None
+    file_name = None
+
+    if message.document:
+        file_data = message.document
+        file_type = "document"
+        file_name = file_data.file_name
+    elif message.photo:
+        # Telegram sends multiple sizes, pick the largest one
+        file_data = message.photo[-1]
+        file_type = "photo"
+        file_name = f"photo_{file_data.file_unique_id}.jpg"
+    elif message.video:
+        file_data = message.video
+        file_type = "video"
+        file_name = file_data.file_name
+    elif message.voice:
+        file_data = message.voice
+        file_type = "voice"
+        file_name = f"voice_{file_data.file_unique_id}.ogg"
+    elif message.audio:
+        file_data = message.audio
+        file_type = "audio"
+        file_name = file_data.file_name
+    
+    if file_data:
+        content_manager.add_file_data(
+            file_id=file_data.file_id,
+            file_type=file_type,
+            file_name=file_name,
+            user_id=user_id
+        )
+        
+        await message.reply_text(
+            f"✅ تم تخزين بيانات الملف بنجاح!\n"
+            f"النوع: {file_type}\n"
+            f"الاسم: {file_name or 'غير متوفر'}\n"
+            f"معرف الملف (File ID): `{file_data.file_id}`",
+            parse_mode='Markdown'
+        )
+    else:
+        # Should not happen if the handler is set up correctly for file types
+        await message.reply_text("لم يتم التعرف على نوع الملف.")
+
 # دالة بدء البوت
 async def start(update: Update, context):
     user_id = update.effective_user.id
@@ -72,7 +123,9 @@ async def button_handler(update: Update, context):
         quiz_id = query.data.split('_')[2]
         await start_quiz(query, context, quiz_id)
     elif query.data.startswith('quiz_answer_'):
-        quiz_id, question_index, answer_index = map(int, query.data.split('_')[2:])
+        quiz_id, question_index, answer_index = query.data.split('_')[2:]
+        question_index = int(question_index)
+        answer_index = int(answer_index)
         await process_quiz_answer(query, context, quiz_id, question_index, answer_index)
     elif query.data == 'back_to_main':
         await query.edit_message_text(
@@ -340,6 +393,9 @@ def main():
     application.add_handler(CommandHandler("adminstats", admin_stats))
     application.add_handler(CommandHandler("addlesson", admin_add_lesson))
     application.add_handler(CommandHandler("addquiz", admin_add_quiz))
+    
+    # File Handler
+    application.add_handler(MessageHandler(filters.ATTACHMENT, handle_file_message))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
