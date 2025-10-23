@@ -1,5 +1,5 @@
 import json
-from config import *
+import config
 
 class ContentManager:
     def __init__(self):
@@ -7,7 +7,7 @@ class ContentManager:
 
     def load_content(self):
         try:
-            with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
+            with open(config.CONTENT_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
             return {
@@ -20,7 +20,7 @@ class ContentManager:
             }
 
     def save_content(self):
-        with open(CONTENT_FILE, 'w', encoding='utf-8') as f:
+        with open(config.CONTENT_FILE, 'w', encoding='utf-8') as f:
             json.dump(self.content, f, ensure_ascii=False, indent=2)
 
     def add_lesson(self, lesson_id, title, description, content_text, quiz_id=None):
