@@ -128,11 +128,24 @@ class UserManager:
         if not user_data:
             return
         
+        # التأكد من وجود الهياكل الأساسية
+        if 'learning' not in user_data:
+            user_data['learning'] = {}
+        if 'stats' not in user_data:
+            user_data['stats'] = {}
+        
+        # تهيئة الحقول المطلوبة إذا لم تكن موجودة
+        user_data['learning'].setdefault('last_activity', datetime.now().isoformat())
+        user_data['learning'].setdefault('current_streak', 0)
+        user_data['learning'].setdefault('longest_streak', 0)
+        user_data['learning'].setdefault('lessons_today', 0)
+        user_data['stats'].setdefault('total_days', 1)
+        
         now = datetime.now()
         today = now.date().isoformat()
         last_activity = datetime.fromisoformat(user_data['learning']['last_activity']).date().isoformat()
         
-        # تحديث السلسلة
+        # تحديث السلسلة والأيام
         if today != last_activity:
             if (now - datetime.fromisoformat(user_data['learning']['last_activity'])).days == 1:
                 user_data['learning']['current_streak'] += 1
@@ -144,7 +157,7 @@ class UserManager:
                 user_data['learning']['current_streak'] = 1
             
             user_data['learning']['lessons_today'] = 0
-            user_data['learning']['total_days'] += 1
+            user_data['stats']['total_days'] += 1
         
         user_data['learning']['last_activity'] = now.isoformat()
         self.update_leaderboard(user_id)
@@ -154,6 +167,11 @@ class UserManager:
         user_data = self.get_user(user_id)
         if not user_data:
             return
+        
+        # التأكد من وجود الحقول المطلوبة
+        user_data['learning'].setdefault('total_xp', 0)
+        user_data['learning'].setdefault('lessons_today', 0)
+        user_data['learning'].setdefault('daily_goal', 3)
         
         user_data['learning']['total_xp'] += xp_amount
         user_data['learning']['lessons_today'] += 1
@@ -172,6 +190,12 @@ class UserManager:
         user_data = self.get_user(user_id)
         if not user_data:
             return
+        
+        # التأكد من وجود الحقول المطلوبة
+        user_data['learning'].setdefault('total_xp', 0)
+        user_data['learning'].setdefault('current_streak', 0)
+        user_data['stats'].setdefault('total_lessons', 0)
+        user_data['stats'].setdefault('accuracy', 0)
         
         xp = user_data['learning']['total_xp']
         streak = user_data['learning']['current_streak']
